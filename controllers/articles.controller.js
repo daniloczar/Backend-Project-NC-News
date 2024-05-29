@@ -1,8 +1,6 @@
 const {
   selectArticlesId,
   selectAllArticles,
-  selectArticleCommentsByArticleId,
-  checkArticleExists,
 } = require("../models/articles.model");
 
 exports.getArticlesById = (req, res, next) => {
@@ -26,16 +24,3 @@ exports.getAllArticles = (req, res, next) => {
     });
 };
 
-exports.getArticleCommentsByArticleId = (req, res, next) => {
- const { article_id } = req.params;
- checkArticleExists(article_id)
-   .then(() => {
-     return selectArticleCommentsByArticleId(article_id);
-   })
-   .then((comments) => {
-     res.status(200).send({ comments });
-   })
-   .catch((error) => {
-     next(error);
-   });
-};

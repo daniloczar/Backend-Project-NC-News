@@ -104,7 +104,7 @@ describe("GET/api/articles", () => {
 
         expect(articles.length).toBe(13);
         expect(articles).toBeInstanceOf(Array);
-        
+
         articles.forEach((article) => {
           expect(article).not.toHaveProperty("body");
           expect(article).toMatchObject({
@@ -187,4 +187,78 @@ describe("GET/api/articles/:article_id/comments", () => {
         });
       });
   });
+});
+
+describe("POST/api/articles/:article_id/comments", () => {
+  it("POST returns 201 status with the a named object containing the posted comment ", () => {
+    const newComment = {
+      username: "icellusedkars",
+      body: "I hate streaming eyes even more",
+    };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { postComment } = body;
+        expect(typeof body).toBe("object");
+        expect(postComment).toMatchObject({
+          comment_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: "icellusedkars",
+          body: "I hate streaming eyes even more",
+          article_id: 1,
+        });
+      });
+  });
+
+  test("POST 201: should ignore unnecessary properties in the input", () => {
+    const input = {
+      username: "icellusedkars",
+      body: "I hate streaming eyes even more",
+      tagline: "my cool comment",
+    };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(input)
+      .expect(201)
+      .then(({ body }) => {
+        const { postComment } = body;
+        expect(postComment).not.toHaveProperty("tagline");
+      });
+  });
+
+    test("return a 404 status error message when new comment is passed a key with a value of the wrong data type", () => {
+      const newComment = {
+        username: "icellusedkars",
+        body: 10,
+      };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+          const {msg} = body
+          expect(msg).toBe("bad request");
+        });
+    });
+
+    test("returns 400 error message when given an invalid id", () => {
+      const newComment = {
+        username: "icellusedkars",
+        body: "I hate streaming eyes even more",
+      };
+      return request(app)
+        .post("/api/articles/not-a-banana/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad Request");
+        });
+    });
+
 });
