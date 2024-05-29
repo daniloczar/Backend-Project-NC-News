@@ -83,3 +83,40 @@ describe('GET/api/article/:articles_id', () => {
   });
 
 });
+
+describe('GET/api/articles', () => {
+   test("should respond with 200 status and all articles each of which include the required properties sorted by date in descending order ", () => {
+     return request(app)
+       .get("/api/articles")
+       .expect(200)
+       .then(({ body }) => {
+         const articles = body.allArticles;
+         
+         expect(articles.length).toBe(13);
+         expect(articles).toBeInstanceOf(Array);
+
+         articles.forEach((article) => {
+          expect(article).not.toHaveProperty("body");
+          expect(article).toMatchObject({
+             article_id: expect.any(Number),
+             title: expect.any(String),
+             topic: expect.any(String),
+             author: expect.any(String),
+             created_at: expect.any(String),
+             votes: expect.any(Number),
+             article_img_url: expect.any(String),
+             comment_count: expect.any(String),
+           });
+         });
+       });
+   });
+
+   test("should respond with a 404 if given a not existent endpoint", () => {
+     return request(app)
+       .get("/api/articlez")
+       .expect(404)
+       .then(({ body }) => {
+         expect(body.msg).toBe("Not found");
+       });
+   });
+});
