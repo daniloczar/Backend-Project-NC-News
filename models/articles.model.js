@@ -8,19 +8,18 @@ exports.selectArticlesId = (article_id) => {
       [article_id]
     )
     .then(({ rows }) => {
-        
-      if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Bad Request" });
-      } else {
-        return rows[0];
-      }
+     if (rows.length === 0) {
+       return Promise.reject({ status: 404, msg: "Not found" });
+     } else {
+       return rows[0];
+     }
     });
 };
 
 exports.selectAllArticles = () => {
-  
-  return db.query(
-    `SELECT 
+  return db
+    .query(
+      `SELECT 
       articles.article_id,
       articles.title,
       articles.topic, 
@@ -34,10 +33,28 @@ exports.selectAllArticles = () => {
       GROUP BY articles.article_id
       ORDER BY articles.created_at DESC;
       `
-  ).then(({rows})=>{
-    return rows
-  })
-  .catch((error)=>{
-    next(error)
-  })
-}
+    )
+    .then(({ rows }) => {
+      return rows;
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+exports.selectArticleCommentsByArticleId = (article_id) => {
+  let queryString = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`;
+
+  return db.query(queryString, [article_id]).then(({ rows }) => {
+    return rows;
+  });
+};
+exports.checkArticleExists = (article_id) => {
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+      }
+    });
+};
