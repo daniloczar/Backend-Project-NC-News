@@ -3,6 +3,7 @@ const request = require("supertest");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
+const endpoints = require('../endpoints.json')
 
 beforeEach(() => {
   return seed(data);
@@ -47,13 +48,7 @@ describe("GET/api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        const { endPoints } = body;
-        for (const value in endPoints) {
-            expect(Object.keys(endPoints).length).not.toBe(0);
-            expect(endPoints[value]).hasOwnProperty("description");
-            expect(endPoints[value]).hasOwnProperty("queries");
-            expect(endPoints[value]).hasOwnProperty("exampleResponse");
-            }
+        expect(body.endpoints).toEqual(endpoints)
         });
     });
     test(`Status: 200, checks if the endpoints is returning a Object`, () => {
@@ -61,8 +56,30 @@ describe("GET/api", () => {
         .get(`/api`)
         .expect(200)
         .then(({ body }) => {
-          const { endPoints } = body;
-          expect(endPoints).toBeInstanceOf(Object);
+          const { endpoints } = body;
+          expect(endpoints).toBeInstanceOf(Object);
         });
     });
+});
+
+describe('GET/api/article/:articles_id', () => {
+  test("Responds with the appropriate article when ID is passed", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then(({body}) => {
+        const {article} = body
+        expect(article).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+
 });
