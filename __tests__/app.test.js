@@ -435,7 +435,6 @@ describe("GET /api/articles (topic query)", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.allArticles;
-        console.log(articles)
         expect(articles).toEqual([]);
       });
   });
@@ -465,4 +464,26 @@ describe("GET /api/articles (topic query)", () => {
          expect(articles.length).toBe(13);
       });
   });
+});
+
+describe('GET/api/articles/:article_id', () => {
+   test("returns an article object by id with a comment_count property and the apropriate value", () => {
+     return request(app)
+    .get('/api/articles/1')
+    .expect(200)
+    .then(({body})=>{
+      console.log(body)
+        expect(body.article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: 1,
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: 11
+        })
+    })
+  })
 });
