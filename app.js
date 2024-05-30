@@ -11,6 +11,7 @@ const {
 const {
   getArticleCommentsByArticleId,
   postCommentByArticleId,
+  deleteCommentById,
 } = require("./controllers/comments.controller");
 
 const app = express();
@@ -26,6 +27,8 @@ app.get("/api/articles/:article_id/comments", getArticleCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
 app.patch("/api/articles/:article_id", patchUpdateArticleById);
+
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 //customError
 app.use((error, req, res, next) => {
