@@ -16,34 +16,55 @@ exports.selectArticlesId = (article_id) => {
     });
 };
 
-exports.selectAllArticles = () => {
+exports.selectAllArticles = (topic) => {
+  let queryString = `SELECT articles.author, 
+    articles.title, 
+    articles.article_id, 
+    articles.topic, 
+    articles.created_at, 
+    articles.votes, 
+    articles.article_img_url, 
+    CAST(COUNT(comment_id) AS INT) 
+    AS comment_count
+    FROM articles
+    LEFT JOIN comments 
+    ON comments.article_id = articles.article_id`;
+
+  const queryValues = [];
+
+  if (topic) {
+    queryString += ` WHERE topic = $1 `;
+    queryValues.push(topic);
+  }
+
+  queryString += ` GROUP BY articles.article_id
+    ORDER BY articles.created_at DESC`;
   return db
-    .query(
-      `SELECT 
-      articles.article_id,
-      articles.title,
-      articles.topic, 
-      articles.author, 
-      articles.created_at, 
-      articles.votes, 
-      articles.article_img_url, 
-      COUNT(comments.comment_id) AS comment_count 
-      FROM articles LEFT JOIN comments 
-      ON articles.article_id = comments.article_id
-      GROUP BY articles.article_id
-      ORDER BY articles.created_at DESC;
-      `
-    )
+    .query(queryString, queryValues)
     .then(({ rows }) => {
+      if (!rows.length && topic) {
+        return checkTopicExists(topic);
+      }
       return rows;
     })
-    .catch((error) => {
-      next(error);
+    .then((rows) => {
+      return rows;
+    });
+};
+const checkTopicExists = (topic) => {
+  return db
+    .query(`SELECT * FROM topics WHERE slug = $1`, [topic])
+    .then(({rows}) => {
+      if (!rows.length) {
+        return Promise.reject({ status: 404, msg: "topic not found" });
+      } else {
+        return [];
+      }
     });
 };
 
 exports.updateArticlesById = (article_id, newVote) => {
-  const votes = newVote.inc_votes
+  const votes = newVote.inc_votes;
   return db
     .query(
       `UPDATE articles
