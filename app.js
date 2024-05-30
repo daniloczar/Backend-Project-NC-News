@@ -13,6 +13,7 @@ const {
   postCommentByArticleId,
   deleteCommentById,
 } = require("./controllers/comments.controller");
+const { getUsers } = require("./controllers/users.controller");
 
 const app = express();
 app.use(express.json());
@@ -22,7 +23,7 @@ app.get("/api", getAllEndPoints);
 app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getArticleCommentsByArticleId);
-
+app.get("/api/users", getUsers);
 
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
@@ -39,11 +40,11 @@ app.use((error, req, res, next) => {
 
 //psqlError
 app.use((error, req, res, next) => {
-    if (error.code === "22P02" || error.code === "23502") {
-      res.status(400).send({ msg: error.msg || "Bad Request" });
-    } else if (error.code === "23503") {
-      res.status(404).send({ msg: error.msg || "User input not found" });
-    } else next(error);
+  if (error.code === "22P02" || error.code === "23502") {
+    res.status(400).send({ msg: error.msg || "Bad Request" });
+  } else if (error.code === "23503") {
+    res.status(404).send({ msg: error.msg || "User input not found" });
+  } else next(error);
 });
 
 app.all("*", (request, response) => {

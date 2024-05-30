@@ -353,42 +353,66 @@ describe("PATCH/api/articles/:article_id", () => {
       .patch("/api/articles/999")
       .send(articleVote)
       .expect(404)
-      .then(({body}) => {
-        const {msg} = body
+      .then(({ body }) => {
+        const { msg } = body;
         expect(msg).toBe("Not found");
       });
   });
-
 });
 
+describe("DELETE/api/comments/:comments_id", () => {
+  test("DELETE: 204 status should delete the specified comment and respond with no content", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
 
-describe('DELETE/api/comments/:comments_id', () => {
- test("DELETE: 204 status should delete the specified comment and respond with no content",() => {
-     return request(app)
-       .delete("/api/comments/1")
-       .expect(204)
-       .then(({body}) => {
-         expect(body).toEqual({});
-       });
-   });
+  test("DELETE: 400 status respond with Bad Request when passed a invalid ID", () => {
+    return request(app)
+      .delete("/api/comments/not-a-banana")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
 
-   test("DELETE: 400 status respond with Bad Request when passed a invalid ID", () => {
-     return request(app)
-       .delete("/api/comments/not-a-banana")
-       .expect(400)
-       .then(({body}) => {
-         const { msg } = body;
-         expect(msg).toBe("Bad Request");
-       });
-   });
+  test("DELETE: 404 status return Comment does not exist! when passed a valid but not-exitent ID", () => {
+    return request(app)
+      .delete("/api/comments/222")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Comment does not exist!");
+      });
+  });
+});
 
-   test("DELETE: 404 status return Comment does not exist! when passed a valid but not-exitent ID", () => {
-     return request(app)
-       .delete("/api/comments/222")
-       .expect(404)
-       .then(({ body }) => {
-         const { msg } = body;
-         expect(msg).toBe("Comment does not exist!");
-       });
-   });
+describe.only("GET/api/users", () => {
+  test("returns a 200 status code with correct body", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(typeof user.username).toBe("string");
+          expect(typeof user.name).toBe("string");
+          expect(typeof user.avatar_url).toBe("string");
+        });
+      });
+  });
+
+  test("respond with a 404 error message if given an endpoint that does not exist", () => {
+    return request(app)
+      .get("/api/userz")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
 });
