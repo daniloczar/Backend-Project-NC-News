@@ -190,7 +190,7 @@ describe("GET/api/articles/:article_id/comments", () => {
 });
 
 describe("POST/api/articles/:article_id/comments", () => {
-  it("POST returns 201 status with the a named object containing the posted comment ", () => {
+  test("POST returns 201 status with the a named object containing the posted comment ", () => {
     const newComment = {
       username: "icellusedkars",
       body: "I hate streaming eyes even more",
@@ -231,34 +231,132 @@ describe("POST/api/articles/:article_id/comments", () => {
       });
   });
 
-    test("return a 404 status error message when new comment is passed a key with a value of the wrong data type", () => {
-      const newComment = {
-        username: "icellusedkars",
-        body: 10,
-      };
-      return request(app)
-        .post("/api/articles/1/comments")
-        .send(newComment)
-        .expect(400)
-        .then(({body}) => {
-          const {msg} = body
-          expect(msg).toBe("bad request");
-        });
-    });
+  test("return a 400 status error message when new comment is passed a key with a value of the wrong data type", () => {
+    const newComment = {
+      username: "icellusedkars",
+      body: 10,
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
 
-    test("returns 400 error message when given an invalid id", () => {
-      const newComment = {
-        username: "icellusedkars",
-        body: "I hate streaming eyes even more",
-      };
-      return request(app)
-        .post("/api/articles/not-a-banana/comments")
-        .send(newComment)
-        .expect(400)
-        .then(({body}) => {
-          const { msg } = body;
-          expect(msg).toBe("Bad Request");
+  test("returns 400 error message when given an invalid id", () => {
+    const newComment = {
+      username: "icellusedkars",
+      body: "I hate streaming eyes even more",
+    };
+    return request(app)
+      .post("/api/articles/not-a-banana/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+
+  test("responds 404 status with appropriate message when given valid but non-existent id.", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "This is a bad article name",
+    };
+    return request(app)
+      .post("/api/articles/58964/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Not Found");
+      });
+  });
+
+  test("404 status responds comments with invalid author should return user not found", () => {
+    const newComment = {
+      username: "invalid_user",
+      body: "Fruit pastilles",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("User input not found");
+      });
+  });
+});
+
+describe("PATCH/api/articles/:article_id", () => {
+  test("PATCH 200 status should update an article's vote property with POSITIVE value on the requst body ", () => {
+    const articleVote = { inc_votes: 10 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(articleVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { upArticles } = body;
+        expect(upArticles).toMatchObject({
+          article_id: expect.any(Number),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 110,
+          article_img_url: expect.any(String),
         });
-    });
+      });
+  });
+
+  test("PATCH 200 status should update an article's vote property with NEGATIVE value on the requst body ", () => {
+    const articleVote = { inc_votes: -10 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(articleVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { upArticles } = body;
+        expect(upArticles).toMatchObject({
+          article_id: expect.any(Number),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 90,
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+
+  test("responds 400 error message when given an invalid id", () => {
+    const articleVote = { inc_vote: 10 };
+    return request(app)
+      .patch("/api/articles/not-a-banana")
+      .send(articleVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+
+  test("responds 404 error message when given a valid but non-existent id", () => {
+    const articleVote = { inc_vote: 100 };
+    return request(app)
+      .patch("/api/articles/999")
+      .send(articleVote)
+      .expect(404)
+      .then(({body}) => {
+        const {msg} = body
+        expect(msg).toBe("Not found");
+      });
+  });
 
 });
