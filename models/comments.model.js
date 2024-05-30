@@ -17,9 +17,9 @@ exports.checkArticleExists = (article_id) => {
 };
 
 exports.insertCommentByArticleId = (article_id, username, body) => {
-     if (typeof body !== "string" || typeof username !== "string") {
-       return Promise.reject({ status: 400, msg: "bad request" });
-     } 
+  if (typeof body !== "string" || typeof username !== "string") {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
   return db
     .query(
       `
@@ -27,10 +27,12 @@ exports.insertCommentByArticleId = (article_id, username, body) => {
     (body, author, article_id)
     VALUES
     ($1, $2, $3)
-    RETURNING *`, [body, username, article_id]
+    RETURNING *`,
+      [body, username, article_id]
     )
     .then(({ rows }) => {
-       console.log('----->',rows)
       return rows[0];
     });
 };
+
+
