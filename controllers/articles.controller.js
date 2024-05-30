@@ -2,6 +2,7 @@ const {
   selectArticlesId,
   selectAllArticles,
   updateArticlesById,
+
 } = require("../models/articles.model");
 
 exports.getArticlesById = (req, res, next) => {
@@ -16,7 +17,8 @@ exports.getArticlesById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  selectAllArticles()
+  const { topic } = req.query
+  selectAllArticles(topic)
     .then((allArticles) => {
       res.status(200).send({ allArticles });
     })
@@ -38,6 +40,6 @@ exports.patchUpdateArticleById = (req, res, next) => {
       res.status(200).send({ upArticles });
     })
     .catch((error) => {
-      next(console.log(error));
+      next(error);
     });
 };
