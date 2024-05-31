@@ -2,13 +2,22 @@ const {
   selectArticlesId,
   selectAllArticles,
   updateArticlesById,
-
 } = require("../models/articles.model");
+const { checkArticleExists } = require("../models/comments.model");
+const { selectAllTopics } = require("../models/topics.model");
 
 exports.getArticlesById = (req, res, next) => {
   const { article_id } = req.params;
-  selectArticlesId(article_id)
-    .then((article) => {
+
+  const promises = [selectArticlesId(article_id)];
+
+  if (article_id) {
+    promises.push(checkArticleExists(article_id));
+  }
+  Promise.all(promises)
+
+    .then((resolvedPromise) => {
+      const article = resolvedPromise[0]
       res.status(200).send({ article });
     })
     .catch((error) => {
@@ -17,9 +26,26 @@ exports.getArticlesById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { topic } = req.query
-  selectAllArticles(topic)
-    .then((allArticles) => {
+  const { topic } = req.query;
+
+  const promises = [selectAllArticles(topic)];
+  if (topic) {
+    promises.push(
+      selectAllTopics().then((topics) => {
+        const slugs = topics.map((topic) => topic.slug);
+        if (!slugs.includes(topic)) {
+          return Promise.reject({
+            status: 404,
+            msg: "Topic does not exist.",
+          });
+        }
+      })
+    );
+  }
+
+  Promise.all(promises)
+    .then((resolvedPromises) => {
+      const allArticles = resolvedPromises[0];
       res.status(200).send({ allArticles });
     })
     .catch((error) => {
@@ -29,7 +55,7 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.patchUpdateArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  const { body } = req
+  const { body } = req;
 
   if (isNaN(article_id)) {
     return res.status(400).send({ msg: "Bad Request" });
