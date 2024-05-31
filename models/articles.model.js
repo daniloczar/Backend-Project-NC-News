@@ -13,11 +13,7 @@ exports.selectArticlesId = (article_id) => {
       [article_id]
     )
     .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Not found" });
-      } else {
         return rows[0];
-      }
     });
 };
 
@@ -44,29 +40,13 @@ exports.selectAllArticles = (topic) => {
 
   queryString += ` GROUP BY articles.article_id
     ORDER BY articles.created_at DESC`;
+    queryString += ';'
   return db
     .query(queryString, queryValues)
     .then(({ rows }) => {
-      if (!rows.length && topic) {
-        return checkTopicExists(topic);
-      }
       return rows;
     })
-    .then((rows) => {
-      return rows;
-    });
-};
-const checkTopicExists = (topic) => {
-  return db
-    .query(`SELECT * FROM topics WHERE slug = $1`, [topic])
-    .then(({rows}) => {
-      if (!rows.length) {
-        return Promise.reject({ status: 404, msg: "topic not found" });
-      } else {
-        return [];
-      }
-    });
-};
+}
 
 exports.updateArticlesById = (article_id, newVote) => {
   const votes = newVote.inc_votes;
@@ -79,9 +59,6 @@ exports.updateArticlesById = (article_id, newVote) => {
       [votes, article_id]
     )
     .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({ status: 404, message: "Not found" });
-      }
       return rows[0];
     });
 };
