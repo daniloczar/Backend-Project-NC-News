@@ -26,9 +26,31 @@ exports.getArticlesById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { topic } = req.query;
+  const {
+    author,
+    title,
+    topic,
+    created_at,
+    votes,
+    article_img_url,
+    comment_count,
+    sort_by,
+    order,
+  } = req.query;
 
-  const promises = [selectAllArticles(topic)];
+  const promises = [
+    selectAllArticles(
+      author,
+      title,
+      topic,
+      created_at,
+      votes,
+      article_img_url,
+      comment_count,
+      sort_by,
+      order
+    ),
+  ];
   if (topic) {
     promises.push(
       selectAllTopics().then((topics) => {
