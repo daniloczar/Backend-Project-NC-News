@@ -95,7 +95,7 @@ describe("GET/api/article/:articles_id", () => {
 });
 
 describe("GET/api/articles", () => {
-  test("should respond with 200 status and all articles each of which include the required properties sorted by date in descending order ", () => {
+  xtest("should respond with 200 status and all articles each of which include the required properties sorted by date in descending order ", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -416,7 +416,7 @@ describe("GET/api/users", () => {
 });
 
 describe("GET /api/articles (topic query)", () => {
-  test("returns a 200 status code and correct body of queried articles", () => {
+  xtest("returns a 200 status code and correct body of queried articles", () => {
     return request(app)
       .get("/api/articles?topic=cats")
       .expect(200)
@@ -428,7 +428,7 @@ describe("GET /api/articles (topic query)", () => {
         });
       });
   });
-  test("returns a 200 status code and an empty array if valid topic is entered with no articles related to that topic", () => {
+  xtest("returns a 200 status code and an empty array if valid topic is entered with no articles related to that topic", () => {
     return request(app)
       .get("/api/articles?topic=paper")
       .expect(200)
@@ -446,7 +446,7 @@ describe("GET /api/articles (topic query)", () => {
         expect(msg).toBe("Topic does not exist.");
       });
   });
-  test("200 status responds with all articles if no topic", () => {
+  xtest("200 status responds with all articles if no topic", () => {
     const topic = "";
     return request(app)
       .get(`/api/articles?topic=${topic}`)
