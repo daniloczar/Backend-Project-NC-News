@@ -16,27 +16,15 @@ const {
 } = require("./controllers/comments.controller");
 const { getUsers, getUserByUsername } = require("./controllers/users.controller");
 
-const app = express();
-app.use(express.json());
-
-app.get("/api/topics", getAllTopics);
-app.get("/api", getAllEndPoints);
-app.get("/api/articles/:article_id", getArticlesById);
-app.get("/api/articles", getAllArticles);
-app.get("/api/articles/:article_id/comments", getArticleCommentsByArticleId);
-app.get("/api/users", getUsers);
-app.get("/api/user/:username", getUserByUsername)
-
-app.post("/api/articles/:article_id/comments", postCommentByArticleId);
-
-app.patch("/api/articles/:article_id", patchUpdateArticleById);
-
-app.delete("/api/comments/:comment_id", deleteCommentById);
-
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET,HEAD,PUT,PATCH,POST,DELETE"]
+  })
+);
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,CONNECT,TRACE"
@@ -72,6 +60,24 @@ app.options("*", (req, res) => {
     console.log("health check is processed");
     return res.status(204).send();
   });
+const app = express();
+app.use(express.json());
+
+app.get("/api/topics", getAllTopics);
+app.get("/api", getAllEndPoints);
+app.get("/api/articles/:article_id", getArticlesById);
+app.get("/api/articles", getAllArticles);
+app.get("/api/articles/:article_id/comments", getArticleCommentsByArticleId);
+app.get("/api/users", getUsers);
+app.get("/api/user/:username", getUserByUsername)
+
+app.post("/api/articles/:article_id/comments", postCommentByArticleId);
+
+app.patch("/api/articles/:article_id", patchUpdateArticleById);
+
+app.delete("/api/comments/:comment_id", deleteCommentById);
+
+
 
 //customError
 app.use((error, req, res, next) => {
