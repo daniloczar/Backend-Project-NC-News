@@ -1,3 +1,4 @@
+const cors = require('cors')
 const express = require("express");
 const {
   getAllTopics,
@@ -31,6 +32,8 @@ app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 app.patch("/api/articles/:article_id", patchUpdateArticleById);
 
 app.delete("/api/comments/:comment_id", deleteCommentById);
+
+app.use(cors());
 
 //customError
 app.use((error, req, res, next) => {
