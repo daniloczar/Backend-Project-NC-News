@@ -16,10 +16,13 @@ const {
 } = require("./controllers/comments.controller");
 const { getUsers, getUserByUsername } = require("./controllers/users.controller");
 
+const app = express();
+app.use(express.json());
+
 app.use(
   cors({
     origin: "http://localhost:5173",
-    methods: ["GET,HEAD,PUT,PATCH,POST,DELETE"]
+    methods: ["GET,HEAD,PUT,PATCH,POST,DELETE"],
   })
 );
 
@@ -60,8 +63,6 @@ app.options("*", (req, res) => {
     console.log("health check is processed");
     return res.status(204).send();
   });
-const app = express();
-app.use(express.json());
 
 app.get("/api/topics", getAllTopics);
 app.get("/api", getAllEndPoints);
