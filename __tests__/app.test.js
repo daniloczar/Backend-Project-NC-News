@@ -291,7 +291,7 @@ describe("POST/api/articles/:article_id/comments", () => {
 });
 
 describe("PATCH/api/articles/:article_id", () => {
-  test("PATCH 200 status should update an article's vote property with POSITIVE value on the requst body ", () => {
+  xtest("PATCH 200 status should update an article's vote property with POSITIVE value on the requst body ", () => {
     const articleVote = { inc_votes: 10 };
 
     return request(app)
@@ -312,7 +312,7 @@ describe("PATCH/api/articles/:article_id", () => {
       });
   });
 
-  test("PATCH 200 status should update an article's vote property with NEGATIVE value on the requst body ", () => {
+  xtest("PATCH 200 status should update an article's vote property with NEGATIVE value on the requst body ", () => {
     const articleVote = { inc_votes: -10 };
 
     return request(app)

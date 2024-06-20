@@ -133,27 +133,18 @@ exports.selectAllArticles = (
   });
 };
 
-exports.updateArticlesById = (article_id, body) => {
+exports.updateArticlesById = (article_id, inc_votes) => {
   return db
-    .query("SELECT votes FROM articles WHERE article_id = $1", [article_id])
-    .then(({ rows }) => {
-      const currentVotes = rows[0].votes;
-      const increment = body.inc_votes;
-      const updatedVotes = currentVotes + increment;
-      if (updatedVotes < 0) {
-        return Promise.reject({
-          status: 400,
-          msg: `We're not popular enough to subtract that amount! We only have ${currentVotes} votes!`,
-        });
-      } else {
-        return db
-          .query(
-            "UPDATE articles SET votes = $1 WHERE article_id = $2 RETURNING *",
-            [updatedVotes, article_id]
-          )
-          .then(({ rows }) => {
-            return rows[0];
-          });
+    .query(
+      `UPDATE articles SET votes = votes + $1
+  WHERE article_id = $2
+  RETURNING *;`,
+      [inc_votes, article_id]
+    )
+    .then(({ rows: updatedArticle }) => {
+      if (updatedArticle[0] === undefined) {
+        return Promise.reject({ status: 404, msg: "Article ID Not Found" });
       }
+      return updatedArticle[0];
     });
 };
