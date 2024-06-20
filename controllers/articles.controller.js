@@ -77,13 +77,13 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.patchUpdateArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  const { body } = req;
+   const { inc_votes } = req.body;
 
   if (isNaN(article_id)) {
     return res.status(400).send({ msg: "Bad Request" });
   }
 
-  updateArticlesById(article_id, body)
+  updateArticlesById(article_id, inc_votes)
     .then((upArticles) => {
       res.status(200).send({ upArticles });
     })

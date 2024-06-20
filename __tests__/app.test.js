@@ -291,7 +291,7 @@ describe("POST/api/articles/:article_id/comments", () => {
 });
 
 describe("PATCH/api/articles/:article_id", () => {
-  xtest("PATCH 200 status should update an article's vote property with POSITIVE value on the requst body ", () => {
+  test("PATCH 200 status should update an article's vote property with POSITIVE value on the requst body ", () => {
     const articleVote = { inc_votes: 10 };
 
     return request(app)
@@ -312,7 +312,7 @@ describe("PATCH/api/articles/:article_id", () => {
       });
   });
 
-  xtest("PATCH 200 status should update an article's vote property with NEGATIVE value on the requst body ", () => {
+  test("PATCH 200 status should update an article's vote property with NEGATIVE value on the requst body ", () => {
     const articleVote = { inc_votes: -10 };
 
     return request(app)
@@ -345,15 +345,15 @@ describe("PATCH/api/articles/:article_id", () => {
       });
   });
 
-  xtest("responds 404 error message when given a valid but non-existent id", () => {
+  test("responds 404 error message when given a valid but non-existent id", () => {
     const articleVote = { inc_vote: 10 };
     return request(app)
       .patch("/api/articles/9999")
       .send(articleVote)
-      .expect(200)
+      .expect(404)
       .then(({ body }) => {
         const { msg } = body
-        expect(msg).toBe("Not found");
+        expect(msg).toBe("Article ID Not Found");
       });
   });
 });
