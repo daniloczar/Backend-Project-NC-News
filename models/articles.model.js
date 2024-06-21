@@ -38,6 +38,15 @@ exports.selectAllArticles = (
     "comment_count",
   ];
   const validOrderColumns = ["asc", "ASC", "desc", "DESC"];
+   const queryList = ["topic", "sort_by", "order"];
+   const topicList = [
+     "mitch",
+     "cats",
+     "paper",
+     "coding",
+     "football",
+     "cooking",
+   ];
 
   if (!validSortColumns.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Invalid Sort Query" });
@@ -46,6 +55,12 @@ exports.selectAllArticles = (
   if (!validOrderColumns.includes(order)) {
     return Promise.reject({ status: 400, msg: "Invalid Order Query" });
   }
+   for (const query in queries)
+     if (!queryList.includes(query))
+       return Promise.reject({ status: 400, msg: "Invalid query" });
+
+   if (topic && !topicList.includes(topic))
+     return Promise.reject({ status: 404, msg: "Invalid topic type" });
 
   let querySql = `SELECT articles.author, articles.title, articles.article_id,
   articles.topic, articles.created_at, articles.votes, 
