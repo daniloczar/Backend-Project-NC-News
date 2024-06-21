@@ -51,19 +51,6 @@ exports.getAllArticles = (req, res, next) => {
       order
     ),
   ];
-  if (topic) {
-    promises.push(
-      selectAllTopics().then((topics) => {
-        const slugs = topics.map((topic) => topic.slug);
-        if (!slugs.includes(topic)) {
-          return Promise.reject({
-            status: 404,
-            msg: "Topic does not exist.",
-          });
-        }
-      })
-    );
-  }
 
   Promise.all(promises)
     .then((resolvedPromises) => {
