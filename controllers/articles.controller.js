@@ -17,7 +17,7 @@ exports.getArticlesById = (req, res, next) => {
   Promise.all(promises)
 
     .then((resolvedPromise) => {
-      const article = resolvedPromise[0]
+      const article = resolvedPromise[0];
       res.status(200).send({ article });
     })
     .catch((error) => {
@@ -35,7 +35,9 @@ exports.getAllArticles = (req, res, next) => {
     article_img_url,
     comment_count,
     sort_by,
-    order, limit, p
+    order,
+    limit,
+    p,
   } = req.query;
 
   const promises = [
@@ -48,7 +50,9 @@ exports.getAllArticles = (req, res, next) => {
       article_img_url,
       comment_count,
       sort_by,
-      order, limit, p
+      order,
+      limit,
+      p
     ),
   ];
 
@@ -64,7 +68,7 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.patchUpdateArticleById = (req, res, next) => {
   const { article_id } = req.params;
-   const { inc_votes } = req.body;
+  const { inc_votes } = req.body;
 
   if (isNaN(article_id)) {
     return res.status(400).send({ msg: "Bad Request" });

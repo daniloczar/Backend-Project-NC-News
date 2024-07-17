@@ -28,7 +28,7 @@ exports.selectAllArticles = (
   comment_count,
   sort_by = "created_at",
   order = "desc",
-  page
+  p
 ) => {
   const validSortColumns = [
     "author",
@@ -129,11 +129,8 @@ exports.selectAllArticles = (
   }
 
   if (limit) {
-    sqlQuery += format(`LIMIT %L `, limit);
-  }
-  if (page) {
-    const offset = limit * (page - 1);
-    sqlQuery += format(`OFFSET %L `, offset);
+    queryValues.push(limit, limit * (p - 1));
+    queryString += ` LIMIT $1 OFFSET $2;`;
   }
 
   querySql += ";";
