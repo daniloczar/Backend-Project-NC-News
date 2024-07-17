@@ -25,6 +25,7 @@ exports.selectAllArticles = (
   votes,
   article_img_url,
   comment_count,
+  p,
   sort_by = "created_at",
   order = "desc",
 ) => {
@@ -121,7 +122,7 @@ exports.selectAllArticles = (
   }
   querySql += `GROUP BY articles.article_id `;
 
-  if (sort_by || order) {
+  if (sort_by && order) {
     querySql += `
     ORDER BY articles.${sort_by} ${order}`;
   }
