@@ -36,8 +36,6 @@ exports.getAllArticles = (req, res, next) => {
     comment_count,
     sort_by,
     order,
-    limit,
-    p,
   } = req.query;
 
   const promises = [
@@ -51,8 +49,6 @@ exports.getAllArticles = (req, res, next) => {
       comment_count,
       sort_by,
       order,
-      limit,
-      p
     ),
   ];
 

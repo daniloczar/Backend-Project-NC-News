@@ -23,12 +23,10 @@ exports.selectAllArticles = (
   topic,
   created_at,
   votes,
-  limit,
   article_img_url,
   comment_count,
   sort_by = "created_at",
   order = "desc",
-  p
 ) => {
   const validSortColumns = [
     "author",
@@ -126,11 +124,6 @@ exports.selectAllArticles = (
   if (sort_by || order) {
     querySql += `
     ORDER BY articles.${sort_by} ${order}`;
-  }
-
-  if (limit) {
-    queryValues.push(limit, limit * (p - 1));
-    queryString += ` LIMIT $1 OFFSET $2;`;
   }
 
   querySql += ";";
