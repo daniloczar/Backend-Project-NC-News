@@ -25,7 +25,6 @@ exports.selectAllArticles = (
   votes,
   article_img_url,
   comment_count,
-  p,
   sort_by = "created_at",
   order = "desc",
 ) => {
